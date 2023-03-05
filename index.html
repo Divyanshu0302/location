@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My HTML Page</title>
+  </head>
+  <body>
+    <p>Your location is: <span id="location"></span></p>
+
+    <script>
+      // Check if geolocation is supported
+      if ("geolocation" in navigator) {
+        // Get user's location
+        navigator.geolocation.getCurrentPosition(position => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          
+          // Display the location
+          const locationEl = document.getElementById("location");
+          fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`)
+            .then(response => response.json())
+            .then(data => {
+              const state = data.address.state;
+              const city = data.address.city;
+              if (state && city) {
+                locationEl.textContent = `${city}, ${state}`;
+              } else if (state) {
+                locationEl.textContent = `${state}`;
+              } else if (city) {
+                locationEl.textContent = `${city}`;
+              } else {
+                locationEl.textContent = `(${latitude}, ${longitude})`;
+              }
+            });
+        });
+      } else {
+        // Geolocation not supported
+        alert("Geolocation is not supported by your browser.");
+      }
+    </script>
+  </body>
+</html>
